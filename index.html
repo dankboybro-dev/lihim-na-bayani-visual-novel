@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lihim na Bayani — Visual Novel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Background layer -->
+  <div id="bg"></div>
+
+  <!-- Character portrait -->
+  <img id="portrait" alt="" aria-hidden="true" />
+
+  <!-- UI top bar -->
+  <header class="topbar">
+    <div class="game-title">Lihim na Bayani</div>
+    <nav class="top-actions">
+      <button id="btnMenu" class="btn ghost">Menu</button>
+    </nav>
+  </header>
+
+  <!-- Dialogue box -->
+  <section id="dialogueBox" class="hidden" aria-live="polite" aria-atomic="true">
+    <div id="nameplate"></div>
+    <div id="dialogueText"></div>
+    <div id="choices" class="choices" hidden></div>
+    <div class="dialogue-actions">
+      <button id="btnBack" class="btn ghost" title="Back">⟵</button>
+      <button id="btnNext" class="btn primary" title="Next">Next ▸</button>
+    </div>
+  </section>
+
+  <!-- Overlay: Main Menu -->
+  <section id="mainMenu" class="menu-screen">
+    <h1 class="menu-title">Lihim na Bayani</h1>
+    <button class="btn" onclick="startGame()">Start Game</button>
+    <button class="btn" onclick="openChapters()">Chapters</button>
+    <button class="btn" onclick="openCredits()">Credits</button>
+    <button class="btn" onclick="exitGame()">Exit</button>
+  </section>
+
+  <!-- Overlay: Chapters -->
+  <section id="chapterOverlay" class="overlay hidden">
+    <div class="panel">
+      <h2>Chapters</h2>
+      <div id="chapterList" class="chapter-list"></div>
+      <button class="btn ghost" data-action="closeChapters">Close</button>
+    </div>
+  </section>
+
+  <!-- Overlay: Credits -->
+  <section id="creditsOverlay" class="overlay hidden">
+    <div class="panel">
+      <h2>Credits</h2>
+      <p>
+        <em>Lihim na Bayani</em> is an educational visual novel created to bring the stories of Philippine Revolution figures to life.  
+        This interactive experience was designed for students to explore history in a more engaging and meaningful way.
+      </p>
+      <p>
+        Characters featured include: José Rizal, Andrés Bonifacio, Emilio Aguinaldo, Apolinario Mabini,  
+        Marcelo H. del Pilar, Graciano López Jaena, Antonio Luna, Mariano Ponce, and Gregorio del Pilar.
+      </p>
+      <button class="btn ghost" data-action="closeCredits">Close</button>
+    </div>
+  </section>
+
+  <!-- JS -->
+  <script src="app.js"></script>
+</body>
+</html>
