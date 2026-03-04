@@ -1,17 +1,28 @@
-// Grab overlays
+// === OVERLAYS & MENU ===
 const overlays = {
   chapter: document.getElementById("chapterOverlay"),
   credits: document.getElementById("creditsOverlay"),
 };
-
-// Main menu
 const mainMenu = document.getElementById("mainMenu");
 
-// Hide/show helpers
 function showOverlay(overlay) { overlay.classList.remove("hidden"); }
 function hideOverlay(overlay) { overlay.classList.add("hidden"); }
 
-// === STORY DATA (Chapter 1 Full with images) ===
+// === CHAPTER DATA ===
+const chapters = [
+  { id: 1, title: "Chapter 1: The Cry of 1896", startIndex: 0, unlocked: true },
+  { id: 2, title: "Chapter 2: The Cry of Pugad Lawin", startIndex: 28, unlocked: false },
+  { id: 3, title: "Chapter 3: Fire at San Juan del Monte", startIndex: 50, unlocked: false },
+  { id: 4, title: "Chapter 4: The Province That Burns", startIndex: 75, unlocked: false },
+  { id: 5, title: "Chapter 5: Dawn at Bagumbayan", startIndex: 100, unlocked: false },
+  { id: 6, title: "Chapter 6: Betrayal at Tejeros", startIndex: 125, unlocked: false },
+  { id: 7, title: "Chapter 7: The Sacrifice of the Supremo", startIndex: 150, unlocked: false },
+  { id: 8, title: "Chapter 8: The Compromise of Biak-na-Bato", startIndex: 175, unlocked: false },
+  { id: 9, title: "Chapter 9: Strange New Allies", startIndex: 200, unlocked: false },
+  { id: 10, title: "Chapter 10: The Price of Kalayaan", startIndex: 225, unlocked: false }
+];
+
+// === STORY DATA (Chapter 1) ===
 let story = [
   // Scene 1 – Hut
   {
@@ -68,7 +79,7 @@ let story = [
   },
   {
     speaker: "Narrator",
-    text: "Later that night, outside the hut, the moon watches Tondo’s silent streets.",
+    text: "Later that night, outside the hut, the moon watches Tondo's silent streets.",
     bg: "streets.jpg",
     next: 9
   },
@@ -208,9 +219,11 @@ let story = [
   }
 ];
 
-// Dialogue runtime
+// === GAME STATE ===
 let currentIndex = 0;
+let historyStack = [];
 
+// === DIALOGUE SYSTEM ===
 function showLine() {
   const line = story[currentIndex];
   if (!line) return;
@@ -220,16 +233,20 @@ function showLine() {
   const choicesContainer = document.getElementById("choices");
   const portrait = document.getElementById("portrait");
   const bg = document.getElementById("bg");
+  const backBtn = document.getElementById("btnBack");
 
   // Background
   if (line.bg) {
     bg.style.backgroundImage = `url('images/${line.bg}')`;
   }
 
-  // Portrait
+  // Portrait with error handling
   if (line.portrait) {
     portrait.src = `images/${line.portrait}`;
     portrait.style.display = "block";
+    portrait.onerror = () => {
+      portrait.style.display = "none";
+    };
   } else {
     portrait.style.display = "none";
   }
@@ -253,6 +270,7 @@ function showLine() {
       btn.className = "choice";
       btn.textContent = c.text;
       btn.onclick = () => {
+        historyStack.push(currentIndex);
         currentIndex = c.next;
         showLine();
       };
@@ -261,47 +279,117 @@ function showLine() {
   } else {
     choicesContainer.hidden = true;
   }
+
+  // Update back button
+  backBtn.disabled = historyStack.length === 0;
 }
 
 function nextLine() {
   const line = story[currentIndex];
   if (line && line.next !== undefined && line.next !== null) {
+    historyStack.push(currentIndex);
     currentIndex = line.next;
     showLine();
   }
 }
 
-// UI buttons
-document.getElementById("btnNext").addEventListener("click", nextLine);
+function prevLine() {
+  if (historyStack.length > 0) {
+    currentIndex = historyStack.pop();
+    showLine();
+  }
+}
 
 // === MENU FUNCTIONS ===
 function startGame() {
-  if (mainMenu) mainMenu.classList.add("hidden");
+  mainMenu.classList.add("hidden");
   document.getElementById("dialogueBox").classList.remove("hidden");
   currentIndex = 0;
+  historyStack = [];
   showLine();
 }
 
-function openCredits() { showOverlay(overlays.credits); }
-function openChapters() { showOverlay(overlays.chapter); }
-function exitGame() {
-  if (mainMenu) mainMenu.classList.remove("hidden");
-  document.getElementById("dialogueBox").classList.add("hidden");
+function openChapters() {
+  const chapterList = document.getElementById("chapterList");
+  chapterList.innerHTML = "";
+  
+  chapters.forEach((chapter) => {
+    const btn = document.createElement("button");
+    btn.className = "btn chapter-btn";
+    btn.textContent = chapter.unlocked ? chapter.title : "🔒 " + chapter.title;
+    btn.disabled = !chapter.unlocked;
+    
+    if (chapter.unlocked) {
+      btn.onclick = () => {
+        currentIndex = chapter.startIndex;
+        historyStack = [];
+        hideOverlay(overlays.chapter);
+        mainMenu.classList.add("hidden");
+        document.getElementById("dialogueBox").classList.remove("hidden");
+        showLine();
+      };
+    }
+    
+    chapterList.appendChild(btn);
+  });
+  
+  showOverlay(overlays.chapter);
 }
 
-// Close overlays
-overlays.chapter.addEventListener("click", (e) => {
-  if (e.target.dataset.action === "closeChapters") hideOverlay(overlays.chapter);
-});
-overlays.credits.addEventListener("click", (e) => {
-  if (e.target.dataset.action === "closeCredits") hideOverlay(overlays.credits);
-});
+function openCredits() {
+  showOverlay(overlays.credits);
+}
 
-// Escape closes overlay
-document.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    Object.values(overlays).forEach((overlay) => {
-      if (!overlay.classList.contains("hidden")) hideOverlay(overlay);
-    });
+function exitGame() {
+  const dialogueBox = document.getElementById("dialogueBox");
+  
+  // If in game, return to menu
+  if (!dialogueBox.classList.contains("hidden")) {
+    dialogueBox.classList.add("hidden");
+    mainMenu.classList.remove("hidden");
+    currentIndex = 0;
+    historyStack = [];
+  } else {
+    // Already in menu
+    if (confirm("Close the game?")) {
+      location.reload();
+    }
   }
+}
+
+// === EVENT LISTENERS ===
+document.addEventListener("DOMContentLoaded", () => {
+  // Navigation buttons
+  document.getElementById("btnNext").addEventListener("click", nextLine);
+  document.getElementById("btnBack").addEventListener("click", prevLine);
+  
+  // Close overlay buttons
+  document.querySelectorAll("[data-action='closeChapters']").forEach(btn => {
+    btn.addEventListener("click", () => hideOverlay(overlays.chapter));
+  });
+  document.querySelectorAll("[data-action='closeCredits']").forEach(btn => {
+    btn.addEventListener("click", () => hideOverlay(overlays.credits));
+  });
+  
+  // Keyboard controls
+  document.addEventListener("keydown", (e) => {
+    // Escape closes overlays or returns to menu
+    if (e.key === "Escape") {
+      if (!overlays.chapter.classList.contains("hidden")) {
+        hideOverlay(overlays.chapter);
+      } else if (!overlays.credits.classList.contains("hidden")) {
+        hideOverlay(overlays.credits);
+      } else if (!document.getElementById("dialogueBox").classList.contains("hidden")) {
+        exitGame();
+      }
+    }
+    
+    // Space/Enter to advance (only when choices not showing)
+    if (!document.getElementById("dialogueBox").classList.contains("hidden")) {
+      if ((e.key === " " || e.key === "Enter") && document.getElementById("choices").hidden) {
+        e.preventDefault();
+        nextLine();
+      }
+    }
+  });
 });
