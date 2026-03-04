@@ -17,7 +17,7 @@
   <header class="topbar">
     <div class="game-title">Lihim na Bayani</div>
     <nav class="top-actions">
-      <button id="btnMenu" class="btn ghost">Menu</button>
+      <button id="btnMenu" class="btn ghost" onclick="exitGame()">Menu</button>
     </nav>
   </header>
 
@@ -52,16 +52,42 @@
 
   <!-- Overlay: Credits -->
   <section id="creditsOverlay" class="overlay hidden">
-    <div class="panel">
+    <div class="panel credits-panel">
       <h2>Credits</h2>
-      <p>
-        <em>Lihim na Bayani</em> is an educational visual novel created to bring the stories of Philippine Revolution figures to life.  
-        This interactive experience was designed for students to explore history in a more engaging and meaningful way.
-      </p>
-      <p>
-        Characters featured include: José Rizal, Andrés Bonifacio, Emilio Aguinaldo, Apolinario Mabini,  
-        Marcelo H. del Pilar, Graciano López Jaena, Antonio Luna, Mariano Ponce, and Gregorio del Pilar.
-      </p>
+      <div class="credits-content">
+        <div class="credit-section">
+          <h3>About This Project</h3>
+          <p>
+            <em>Lihim na Bayani</em> is an educational visual novel created to bring the stories of the Philippine Revolution to life. 
+            This interactive experience was designed for students to explore history in a more engaging and meaningful way.
+          </p>
+        </div>
+        
+        <div class="credit-section">
+          <h3>Historical Figures Featured</h3>
+          <ul class="credits-list">
+            <li><strong>Andrés Bonifacio</strong> – Supremo of the Katipunan</li>
+            <li><strong>Emilio Aguinaldo</strong> – President of the First Philippine Republic</li>
+            <li><strong>José Rizal</strong> – National Hero, martyr</li>
+            <li><strong>Gregoria de Jesús</strong> – Lakambini of the Katipunan</li>
+            <li><strong>Apolinario Mabini</strong> – Brains of the Revolution</li>
+            <li><strong>Antonio Luna</strong> – General, fiery patriot</li>
+            <li><strong>Teresa Magbanua</strong> – Visayan commander</li>
+            <li><strong>Mariano Álvarez</strong> – Revolutionary leader</li>
+          </ul>
+        </div>
+        
+        <div class="credit-section">
+          <h3>Development</h3>
+          <p>Created with HTML5, CSS3, and vanilla JavaScript.</p>
+          <p>Educational purpose: Philippine History, Grade 8-12</p>
+        </div>
+        
+        <div class="credit-section">
+          <h3>Special Thanks</h3>
+          <p>To all who fought for Philippine independence. Mabuhay ang Pilipinas!</p>
+        </div>
+      </div>
       <button class="btn ghost" data-action="closeCredits">Close</button>
     </div>
   </section>
